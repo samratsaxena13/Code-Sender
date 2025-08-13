@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Code Sender</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input, textarea { width: 100%; margin: 5px 0; }
+    textarea { height: 150px; }
+    button { margin: 5px 5px 15px 0; padding: 8px 12px; }
+    .script-block { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background: #f9f9f9; }
+    .script-title { font-weight: bold; margin-bottom: 5px; }
+    .script-date { font-size:small; font-style: italic;  color: grey; margin-bottom: 5px; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background: #eee; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Code Sender</h1>
+
+  <!-- Display area -->
+  <div id="displayArea"></div>
+
+  <!-- Inputs -->
+  <input autocomplete="off" type="text" id="titleInput" placeholder="Script title">
+  <input autocomplete="off" type="text" id="langInput" placeholder="Language used">
+  <textarea autocomplete="off" id="codeInput" placeholder="Code here"></textarea><br>
+  <button id="saveBtn">Save</button>
+  <button id="loadBtn">Load</button>
+
+  <!-- Firebase + App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getDatabase, ref, push, set, get, child } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+    // ⬇⬇⬇ CHANGE THESE VALUES TO YOUR OWN PROJECT CONFIG ⬇⬇⬇
+    const firebaseConfig = {
+      apiKey: "AIzaSyAhf3e-I2UAyQGeEKClcseAaO3OWknUQQ8",
+      authDomain: "python-sender-5fa08.firebaseapp.com",
+      databaseURL: "https://python-sender-5fa08-default-rtdb.firebaseio.com",
+      projectId: "python-sender-5fa08",
+      storageBucket: "python-sender-5fa08.firebasestorage.app",
+      messagingSenderId: "27038015476",
+      appId: "1:27038015476:web:a260b9b29a5b030462a3a1"
+    };
+    // ⬆⬆⬆ CHANGE THESE VALUES TO YOUR OWN PROJECT CONFIG ⬆⬆⬆
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const titleInput = document.getElementById("titleInput");
+    const langInput = document.getElementById("langInput");
+    const codeInput = document.getElementById("codeInput");
+    const displayArea = document.getElementById("displayArea");
+
+    // Save button
+    document.getElementById("saveBtn").onclick = () => {
+      const title = "(" + langInput.value.trim() + ") " + titleInput.value.trim();
+      const code = codeInput.value.trim();
+      const date = new Date().toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+      
+      if (!title || !code || !langInput.value) {
+        alert("Please fill all the fields!");
+        return;
+      }
+
+      // push() creates a unique key so entries don't overwrite
+      const newRef = push(ref(db, "scripts"));
+      set(newRef, {
+        title: title,
+        code: code,
+        date: date
+      }).then(() => {
+        alert("Code saved!");
+        titleInput.value = "";
+        langInput.value = "";
+        codeInput.value = "";
+      }).catch(err => alert(err));
+    };
+
+    // Load button
+    document.getElementById("loadBtn").onclick = () => {
+      get(child(ref(db), "scripts")).then(snapshot => {
+        displayArea.innerHTML = ""; // clear before reloading
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          for (let key in data) {
+            const block = document.createElement("div");
+            block.className = "script-block";
+
+            const titleEl = document.createElement("div");
+            titleEl.className = "script-title";
+            titleEl.textContent = data[key].title;
+            
+            const dateEl = document.createElement("div");
+            dateEl.className = "script-date";
+            dateEl.textContent = data[key].date;
+
+            const codeEl = document.createElement("pre");
+            codeEl.textContent = data[key].code;
+
+            block.appendChild(titleEl);
+            block.appendChild(dateEl);
+            block.appendChild(codeEl);
+            displayArea.appendChild(block);
+          }
+        } else {
+          displayArea.innerHTML = "<p>No scripts found.</p>";
+        }
+      }).catch(err => alert(err));
+    };
+  </script>
+</body>
+</html>
