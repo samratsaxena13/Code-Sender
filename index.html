@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Code Sender</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input { width: 50%; margin: 5px 0; }
+    textarea { height: 150px; }
+    button { margin: 5px 5px 15px 0; padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Code Sender</h1>
+
+  <!-- Inputs -->
+  <input autocomplete="off" type="password" id="passInput" placeholder="Enter password.">
+  <p id="warning" style="visibility: hidden; color: red;">WRONG!! Not permitted!!</p>
+  <button onclick="checkPass()" id="enterBtn">Enter</button>
+
+  <!-- Firebase + App Logic -->
+  <script>
+    times = 0
+    function checkPass(){
+      input = document.getElementById("passInput").value;
+      if(input === "3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067"){
+        window.location.href = "main.html";
+      } else {
+        document.getElementById("warning").style.visibility = "visible";
+        times++;
+        if(times === 3){
+          window.close();
+        }
+      }
+    }
+  </script>
+</body>
+</html>
