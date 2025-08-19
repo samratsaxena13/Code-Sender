@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Code Sender</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input { width: 50%; margin: 5px 0; }
+    textarea { height: 150px; }
+    button { margin: 5px 5px 15px 0; padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Code Sender</h1>
+
+  <!-- Inputs -->
+  <input autocomplete="off" type="password" id="passInput" placeholder="Enter password."><br>
+  <button onclick="checkPass()" id="enterBtn">Enter</button>
+  <p id="warning" style="visibility: hidden; color: red;">ACCESS DENIED!!</p>
+  <p id="success" style="visibility: hidden; color: green;">ACCESS GRANTED!!</p>
+
+  <!-- Firebase + App Logic -->
+  <script>
+    function checkPass(){
+      input = document.getElementById("passInput");
+      warn = document.getElementById("warning").style;
+      allow = document.getElementById("success").style;
+      if(input.value === "3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067"){
+          allow.visibility = "visible";
+          input.value = "";
+          setTimeout(()=>{
+            allow.visibility = "hidden";
+            window.location.href = "main.html";
+          },500);
+      } else {
+        warn.visibility = "visible";
+        input.value = "";
+        setTimeout(()=>{warn.visibility = "hidden";},1000);
+      }
+    }
+  </script>
+</body>
+</html>
